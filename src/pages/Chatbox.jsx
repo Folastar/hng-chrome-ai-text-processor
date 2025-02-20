@@ -13,19 +13,16 @@ const Chatbox = () => {
   const [detectedMsg, setDetectedMessages] = useState([]);
 
   const [errors, setErrors] = useState("");
-//browser support
-if (
-    !("translator" in self.ai) ||
-    !("languageDetector" in self.ai) ||
-    !("summarizer" in self.ai)
-  ) {
-    // alert("your browser does not support this application");
-    setErrors("your browser does not support this application");
-    alert("browser doesnot support application use chrome canary of chrome for developers")
-    // return
+  const [langErr, setLanguageError]= useState("")
+  const [sumErr, setSummerizerError]= useState("")
+
+  if (!('ai' in self && 'languageDetector' in self.ai)){
+    setLanguageError("language detector not available on this browser")
+  } 
+
+  if (!('ai' in self && 'summarizer' in self.ai)) {
+    setSummerizerError("summerizer not available on this browser")
   }
-
-
   // FOR INPUT CHANGES
   const handleInputChange = (e) => {
     setInputText(e.target.value);
@@ -47,11 +44,22 @@ if (
         toast.error("cannot translate same language")
         return
     }
-    const translator = await self.ai.translator.create(languagePair);
-    // const detector = await self.ai.languageDetector.create(messages);
-    const translated = await translator.translate(messages);
-    console.log(translated);
-    setDispalyLang(translated);
+    
+    if(!("ai" in self &&'translator' in self.ai)){
+        setErrors('not avialble for this browser')
+        return
+    }
+    try{
+        const translator = await self.ai.translator.create(languagePair);
+        // const detector = await self.ai.languageDetector.create(messages);
+        const translated = await translator.translate(messages);
+        console.log(translated);
+        setDispalyLang(translated);
+
+    }    
+    catch(error){
+        setErrors(error)
+    }
   };
 
    
@@ -110,34 +118,35 @@ if (
               AI-Powered Text Processor
             </h1>
           </div>
-          {errors && (<p>no inputs</p>)}
           <div className=" py-3 rounded-3xl no-scroll-bar overflow-y-auto">
             <ul>
               {messages.map((message, index) => (
-                <li
+                  <li
                   className="text-right py-2 rounded-2xl  flex flex-col justify-start gap-y-3"
                   key={index}
                   id={`message-${message.index}`}
-                >
-                  <div>
+                  >
+                  <div className="bg-grayWhite-gray w-72 ml-auto rounded-2xl px-2">
                     <p className="text-fuchsia-400 break-words  text-right">{message} </p>
                     <span
                       id={`message-${message.index}`}
                       className={`${
                         isLoading ? "animate-pulse" : ""
-                      }  my-3 text-fuchsia-950 bg-gray-200 rounded-2xl px-2 text-right block`}
+                      }   text-fuchsia-950  rounded-2xl px-2 text-right block`}
                     >
                       {isLoading ? "processing..." : language}
+                      {langErr}
                     </span>
                   </div>
                   <div className="bg-bluish-blue rounded-2xl p-3 w-50">
                     <p
                       className={`  ${
-                        isLoading ? "animate-pulse" : ""
-                      } text-left `}
-                    >
+                          isLoading ? "animate-pulse" : ""
+                        } text-left `}
+                        >
                       Translate: <br />{" "}
                       {isLoading ? "processing....." : dispayLang}
+                        <span className="text-red-800 font-extrabold">{errors}</span>
                     </p>
                   </div>
 
@@ -152,7 +161,7 @@ if (
                       </button>
 
                       <select
-                        className="w-fit outline-none bg-Textarea-gray text-fuchsia-700 border-fuchsia-700"
+                        className="w-fit rounded-2xl py-1 mx-2 outline-none bg-Textarea-gray text-fuchsia-700 border-fuchsia-700"
                         onChange={handleLangChange}
                         value={targetLanguage}
                         name="lang"
