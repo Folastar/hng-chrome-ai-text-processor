@@ -1,0 +1,19 @@
+@import "tailwindcss";
+
+
+
+@theme{
+  --color-grayWhite-gray:#e8e8e8;
+  --color-bluish-blue:#d7e8ff;
+  --color-Textarea-gray:#ebedee;
+  --color-header-gray:#f4f6f8;
+}
+
+
+
+@layer components{
+  .no-scroll-bar::-webkit-scrollbar{
+    display: none;
+    scrollbar-width: 5px;
+  }
+}
