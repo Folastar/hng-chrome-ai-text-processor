@@ -16,23 +16,18 @@ const Chatbox = () => {
   const [langErr, setLanguageError]= useState("")
   const [sumErr, setSummerizerError]= useState("")
 
-  if (!('ai' in self && 'languageDetector' in self.ai)){
-    setLanguageError("language detector not available on this browser")
-  } 
-
-  if (!('ai' in self && 'summarizer' in self.ai)) {
-    setSummerizerError("summerizer not available on this browser")
-  }
   // FOR INPUT CHANGES
   const handleInputChange = (e) => {
-    setInputText(e.target.value);
-  };
+      
+     
+        setInputText(e.target.value);
+    };
 
-  //   for select values
-  const handleLangChange = (e) => {
-    const newLang = e.target.value;
+    //   for select values
+    const handleLangChange = (e) => {
+        const newLang = e.target.value;
     setTargetLanguage(newLang);
-  };
+};
 
   const languagePair = {
     sourceLanguage: "en",
@@ -55,22 +50,22 @@ const Chatbox = () => {
         const translated = await translator.translate(messages);
         console.log(translated);
         setDispalyLang(translated);
-
+        
     }    
     catch(error){
         setErrors(error)
     }
-  };
+};
 
-   
 
-  const addMessages = () => {
+
+const addMessages = () => {
     if (inputText.trim() !== "") {
-      setMessages((m) => [inputText]); //add new messages into array
-      setInputText("");
-      setDetectedMessages((m) => [...m, language]);
+        setMessages((m) => [inputText]); //add new messages into array
+        setInputText("");
+        setDetectedMessages((m) => [...m, language]);
     }
-
+    
     else{
         // alert("what are you doing")
         // setErrors("what are you trying to acheive?")
@@ -82,12 +77,17 @@ const Chatbox = () => {
     e.preventDefault();
 
    
-
+    if (!('ai' in self && 'summarizer' in self.ai)) {
+        setSummerizerError("summerizer not available on this browser")
+      }
+    if (!('ai' in self && 'languageDetector' in self.ai)){
+      setLanguageError("language detector not available on this browser")
+    } 
     try {
-      setIsLoading(true);
+        setIsLoading(true);
       const detector = await self.ai.languageDetector.create(messages);
       const { detectedLanguage, confidence } = (
-        await detector.detect(messages)
+          await detector.detect(messages)
       )[0];
       const output = `i am ${(confidence * 100).toFixed(1)}% sure this is`;
       const displayName = new Intl.DisplayNames([detectedLanguage], {
@@ -135,7 +135,7 @@ const Chatbox = () => {
                       }   text-fuchsia-950  rounded-2xl px-2 text-right block`}
                     >
                       {isLoading ? "processing..." : language}
-                      {langErr}
+                              <span className="text-red-800 font-extrabold">{langErr}</span>
                     </span>
                   </div>
                   <div className="bg-bluish-blue rounded-2xl p-3 w-50">
