@@ -113,7 +113,7 @@ const Chatbox = () => {
   return (
     <form>
       <div className="flex justify-center flex-col items-center h-screen">
-        <div className="bg-white sm:w-[50%] h-[500px] p-1 flex flex-col justify-between rounded-2xl">
+        <div className="bg-white sm:w-[50%] sm:h-[500px] w-full h-screen p-1 flex flex-col justify-between rounded-2xl">
           <div className="header p-1 w-full flex items-center bg-header-gray rounded-tl-2xl rounded-tr-2xl">
             <TbMessageChatbotFilled className="text-fuchsia-900" size={30} />
             <h1 className="bg-header-gray text-fuchsia-400 p-5 rounded-2xl h-10 flex items-center">
