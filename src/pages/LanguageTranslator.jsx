@@ -66,12 +66,23 @@ const Chatbox = () => {
 
       const translatedText = await translator.translate(messageToTranslate.text);
 
-      // Update only the selected message with the translated text
-      setMessages((prevMessages) =>
-        prevMessages.map((msg, i) =>
-          i === index ? { ...msg, translatedText } : msg
-        )
-      );
+      
+      const detector = await self.ai.languageDetector.create();
+      const { detectedLanguage, confidence } = (await detector.detect([
+          messages[index].text,
+        ]))[0];
+        
+        const displayName = new Intl.DisplayNames(["en"], { type: "language" });
+        const langName = displayName.of(detectedLanguage);
+        
+        
+        // Update only the selected message with the translated text
+        setMessages((prevMessages) =>
+          prevMessages.map((msg, i) =>
+            i === index ? { ...msg, translatedText, detectedLanguage: `${langName} (${(confidence * 100).toFixed(1)}%)` } : msg
+          )
+        );
+        
     } catch (error) {
       setErrors(error.message);
     } finally {
@@ -128,7 +139,7 @@ const Chatbox = () => {
                   key={index}
                   id={`message-${index}`}
                 >
-                  <div className="bg-grayWhite-gray w-72 ml-auto rounded-2xl px-2">
+                  <div className="bg-grayWhite-gray w-fit py-2 ml-auto rounded-2xl px-2">
                     <p className="text-fuchsia-400 break-words text-right">
                       {message.text}
                      {/* <p> {handleDetectLanguage(index)}</p> */}
@@ -140,6 +151,7 @@ const Chatbox = () => {
                     >
                       {isLoading ? "Detecting..." : message.detectedLanguage}
                       <span className="text-red-800 font-extrabold">{langErr}</span>
+                      {/* <p>{handleDetectLanguage(index)}</p> */}
                     </span>
                   </div>
 
